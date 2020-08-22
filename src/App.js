@@ -1,26 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import Layout from "./components/Layouts/Layout";
+import BurgerBuilder from "./containers/BurgerBuilder/BurgerBuilder";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  // state = { //added just to test to remove interceptors
+  //   show: true,
+  // };
+  // componentDidMount() {
+  //   setTimeout(() => {
+  //     this.setState({ show: false });
+  //   }, 5000);
+  // }
+  render() {
+    return (
+      <div className="App">
+        <div>
+          {/* <Layout>{this.state.show ? <BurgerBuilder /> : null}</Layout> will use when have to remove unused axios interceptors in big application*/}
+          <Layout>
+            <BurgerBuilder />
+          </Layout>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
