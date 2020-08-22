@@ -9,7 +9,7 @@ import axios from "../../axios-orders";
 import withErrorHandler from "../../hoc/WithErrorHandler/WithErrorHandler";
 
 const INGREDIENT_PRICES = {
-  salad: 0.5,
+  salad: 0.9,
   cheese: 0.4,
   bacon: 0.7,
   meat: 1.3,
