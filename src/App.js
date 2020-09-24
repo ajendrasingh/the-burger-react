@@ -1,15 +1,26 @@
-import React, { Component } from "react";
+import React, { useEffect, Suspense } from "react";
 import Layout from "./components/Layouts/Layout";
 import BurgerBuilder from "./containers/BurgerBuilder/BurgerBuilder";
-import Checkout from "./containers/Checkout/Checkout";
+
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
-import Orders from "./containers/Orders/Orders";
-import Auth from "./containers/Auth/Auth";
+
 import Logout from "./containers/Auth/Logout/Logout";
 import { connect } from "react-redux";
 import * as actions from "./store/actions/index";
 
-class App extends Component {
+const Checkout = React.lazy(() => {
+  return import("./containers/Checkout/Checkout");
+});
+
+const Orders = React.lazy(() => {
+  return import("./containers/Orders/Orders");
+});
+
+const Auth = React.lazy(() => {
+  return import("./containers/Auth/Auth");
+});
+
+const App = (props) => {
   // state = { //added just to test to remove interceptors
   //   show: true,
   // };
@@ -19,39 +30,45 @@ class App extends Component {
   //   }, 5000);
   // }
 
-  componentDidMount() {
-    this.props.onTryAutoSignup();
-  }
-  render() {
-    let routes = (
+  const { onTryAutoSignup } = props;
+
+  useEffect(() => {
+    onTryAutoSignup();
+  }, [onTryAutoSignup]);
+
+  let routes = (
+    <Switch>
+      <Route path="/login" render={(props) => <Auth {...props} />}></Route>
+      <Route path="/" exact component={BurgerBuilder}></Route>
+      <Redirect to="/" />
+    </Switch>
+  );
+  if (props.isAuthenticated) {
+    routes = (
       <Switch>
-        <Route path="/login" component={Auth}></Route>
+        <Route
+          path="/checkout"
+          render={(props) => <Checkout {...props} />}
+        ></Route>
+        <Route path="/orders" render={(props) => <Orders {...props} />}></Route>
         <Route path="/" exact component={BurgerBuilder}></Route>
+        <Route path="/login" render={(props) => <Auth {...props} />}></Route>
+        <Route path="/logout" component={Logout}></Route>
         <Redirect to="/" />
       </Switch>
     );
-    if (this.props.isAuthenticated) {
-      routes = (
-        <Switch>
-          <Route path="/checkout" component={Checkout}></Route>
-          <Route path="/orders" component={Orders}></Route>
-          <Route path="/" exact component={BurgerBuilder}></Route>
-          <Route path="/login" component={Auth}></Route>
-          <Route path="/logout" component={Logout}></Route>
-          <Redirect to="/" />
-        </Switch>
-      );
-    }
-    return (
-      <div className="App">
-        <div>
-          {/* <Layout>{this.state.show ? <BurgerBuilder /> : null}</Layout> will use when have to remove unused axios interceptors in big application*/}
-          <Layout>{routes}</Layout>
-        </div>
-      </div>
-    );
   }
-}
+  return (
+    <div className="App">
+      <div>
+        {/* <Layout>{this.state.show ? <BurgerBuilder /> : null}</Layout> will use when have to remove unused axios interceptors in big application*/}
+        <Layout>
+          <Suspense fallback={<p>Loading...</p>}>{routes}</Suspense>
+        </Layout>
+      </div>
+    </div>
+  );
+};
 
 const mapStateToProps = (state) => {
   return {
